@@ -1,4 +1,5 @@
 const express = require('express');
+const { readTalkerFile } = require('./utils/readAndWriteFiles');
 
 const app = express();
 app.use(express.json());
@@ -12,5 +13,11 @@ app.get('/', (_request, response) => {
 });
 
 app.listen(PORT, () => {
-  console.log('Servidor está rodando na pota 3001');
+  console.log(`🚀 Servidor está rodando na porta ${PORT}`);
+});
+
+app.get('/talker', async (_req, res) => {
+  const talkers = await readTalkerFile();
+  if (!talkers[0]) return res.status(200).json([]);
+  return res.status(200).json(talkers);
 });
