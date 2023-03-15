@@ -1,6 +1,11 @@
 const express = require('express');
 const { readTalkerFile } = require('./utils/readAndWriteFiles');
 const { generatorToken } = require('./utils/generatorToken');
+const {
+  validateEmail,
+  validateLogin,
+  validatePassword,
+} = require('./middlewares/validateLogin');
 
 const app = express();
 app.use(express.json());
@@ -27,11 +32,19 @@ app.get('/talker/:id', async (req, res) => {
   const talkers = await readTalkerFile();
   const { id } = req.params;
   const filteredTalker = talkers.find((talker) => talker.id === Number(id));
- 
+
   if (!filteredTalker) {
-    return res.status(404).json({ message: 'Pessoa palestrante não encontrada' });
+    return res
+      .status(404)
+      .json({ message: 'Pessoa palestrante não encontrada' });
   }
   return res.status(200).json(filteredTalker);
-});  
+});
 
-app.post('/login', async (req, res) => res.status(200).json({ token: generatorToken() }));
+app.post(
+  '/login',
+  validateLogin,
+  validateEmail,
+  validatePassword,
+  async (_req, res) => res.status(200).json({ token: generatorToken() }),
+);
