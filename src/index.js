@@ -1,11 +1,17 @@
 const express = require('express');
-const { readTalkerFile } = require('./utils/readAndWriteFiles');
+const { readTalkerFile, insertTalkerFile } = require('./utils/readAndWriteFiles');
+const { generatorIdTalker } = require('./utils/generatorIdTalker');
 const { generatorToken } = require('./utils/generatorToken');
 const {
   validateEmail,
   validateLogin,
   validatePassword,
 } = require('./middlewares/validateLogin');
+const { validateToken } = require('./middlewares/validateToken');
+const { 
+  validateName, 
+  validateAge, 
+  validateRate, validateWatchedAt, validateTalk } = require('./middlewares/validateTalker');
 
 const app = express();
 app.use(express.json());
@@ -48,3 +54,20 @@ app.post(
   validatePassword,
   async (_req, res) => res.status(200).json({ token: generatorToken() }),
 );
+
+app.post('/talker', validateToken, 
+validateName, 
+validateAge, 
+validateTalk, validateWatchedAt, validateRate,
+async (req, res) => {
+  const { name, age, talk } = req.body;
+  const id = await generatorIdTalker();
+  const talker = {
+    name,
+    age,
+    id,
+    talk,
+  };
+  if (talker) await insertTalkerFile(talker);
+  return res.status(201).json(talker);
+});

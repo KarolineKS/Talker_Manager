@@ -1,6 +1,5 @@
 const validateLogin = (req, res, next) => {
   const { email, password } = req.body;
-  console.log(email, password);
   if (!email) {
     return res.status(400).json({
       message: 'O campo "email" é obrigatório',
