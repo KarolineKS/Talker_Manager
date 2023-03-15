@@ -34,4 +34,4 @@ app.get('/talker/:id', async (req, res) => {
   return res.status(200).json(filteredTalker);
 });  
 
-app.post('/login', async (_req, res) => res.status(200).json({ token: generatorToken() }));
+app.post('/login', async (req, res) => res.status(200).json({ token: generatorToken() }));
