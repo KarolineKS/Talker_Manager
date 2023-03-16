@@ -23,7 +23,20 @@ const insertTalkerFile = async (login) => {
   }
 };
 
+const insertTalkerById = async (talk, id) => {
+  try {
+    const arrayTalkers = await readTalkerFile();
+    arrayTalkers[id - 1] = talk;
+    return await fs.writeFile('src/talker.json', JSON.stringify(arrayTalkers, null, 2));
+  } catch (e) {
+    const err = new Error('Erro ao escrever no arquivo');
+    err.statusCode = 500;
+    throw err;
+  }
+};
+
 module.exports = {
   readTalkerFile,
   insertTalkerFile,
+  insertTalkerById,
 };

@@ -1,5 +1,5 @@
 const express = require('express');
-const { readTalkerFile, insertTalkerFile } = require('./utils/readAndWriteFiles');
+const { readTalkerFile, insertTalkerFile, insertTalkerById } = require('./utils/readAndWriteFiles');
 const { generatorIdTalker } = require('./utils/generatorIdTalker');
 const { generatorToken } = require('./utils/generatorToken');
 const {
@@ -58,7 +58,9 @@ app.post(
 app.post('/talker', validateToken, 
 validateName, 
 validateAge, 
-validateTalk, validateWatchedAt, validateRate,
+validateTalk,
+validateWatchedAt, 
+validateRate,
 async (req, res) => {
   const { name, age, talk } = req.body;
   const id = await generatorIdTalker();
@@ -70,4 +72,26 @@ async (req, res) => {
   };
   if (talker) await insertTalkerFile(talker);
   return res.status(201).json(talker);
+});
+
+app.put('/talker/:id', validateToken, 
+validateName, validateAge, validateTalk, validateWatchedAt, validateRate, async (req, res) => {
+  const talkerFile = await readTalkerFile();
+  const { id } = req.params;
+  const newTalk = req.body;
+  const talker = (talkerFile.find((talk) => talk.id === Number(id)));
+  if (!talker) {
+    return res.status(404).json({ message: 'Pessoa palestrante não encontrada',
+    });
+}
+  if (talker) {
+    const { name, age, talk: { watchedAt, rate } } = newTalk;
+    talker.name = name;
+    talker.age = age;
+    talker.id = Number(id);
+    talker.talk.watchedAt = watchedAt;
+    talker.talk.rate = rate;
+  }
+  await insertTalkerById(talker, id);
+  return res.status(200).json(talker);
 });
