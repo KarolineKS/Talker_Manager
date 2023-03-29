@@ -1,5 +1,6 @@
 const express = require('express');
-const { readTalkerFile, insertTalkerFile, insertTalkerById } = require('./utils/readAndWriteFiles');
+const { readTalkerFile, 
+  insertTalkerFile, insertTalkerById, deleteTalkerById } = require('./utils/readAndWriteFiles');
 const { generatorIdTalker } = require('./utils/generatorIdTalker');
 const { generatorToken } = require('./utils/generatorToken');
 const {
@@ -94,4 +95,10 @@ validateName, validateAge, validateTalk, validateWatchedAt, validateRate, async 
   }
   await insertTalkerById(talker, id);
   return res.status(200).json(talker);
+});
+
+app.delete('/talker/:id', validateToken, async (req, res) => {
+  const { id } = req.params;
+  await deleteTalkerById(id);
+  return res.status(204).json();
 });

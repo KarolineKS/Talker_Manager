@@ -35,8 +35,20 @@ const insertTalkerById = async (talk, id) => {
   }
 };
 
+const deleteTalkerById = async (id) => {
+  try {
+    const talkerFile = await readTalkerFile();
+    const newTalkerFile = talkerFile.filter((talker) => talker.id !== Number(id));
+    console.log(newTalkerFile);
+    return await fs.writeFile('src/talker.json', JSON.stringify(newTalkerFile, null, 2));
+  } catch (e) {
+    throw new Error();
+  }
+};
+
 module.exports = {
   readTalkerFile,
   insertTalkerFile,
   insertTalkerById,
+  deleteTalkerById,
 };
