@@ -1,8 +1,8 @@
 const express = require('express');
 const { readTalkerFile, 
   insertTalkerFile, insertTalkerById, deleteTalkerById } = require('./utils/readAndWriteFiles');
-const { generatorIdTalker } = require('./utils/generatorIdTalker');
-const { generatorToken } = require('./utils/generatorToken');
+const generatorIdTalker = require('./utils/generatorIdTalker');
+const generatorToken = require('./utils/generatorToken');
 const {
   validateEmail,
   validateLogin,
@@ -13,6 +13,7 @@ const {
   validateName, 
   validateAge, 
   validateRate, validateWatchedAt, validateTalk } = require('./middlewares/validateTalker');
+const validateQueryRate = require('./middlewares/validateQueryRate');
 
 const app = express();
 app.use(express.json());
@@ -35,12 +36,13 @@ app.get('/talker', async (_req, res) => {
   return res.status(200).json(talkers);
 });
 
-app.get('/talker/search/', validateToken, async (req, res) => {
-  const { q } = req.query;
+app.get('/talker/search', validateToken, validateQueryRate, async (req, res) => {
+  const { q, rate } = req.query;
   const talkerFile = await readTalkerFile();
 
-  const searchTalker = talkerFile.filter(({ name }) => name.includes(q));
-  return res.status(200).json(searchTalker);
+  const searchTalker = talkerFile.filter(({ name, talk }) => 
+    (q ? name.includes(q) : true) && (rate ? talk.rate === Number(rate) : true));
+    return res.status(200).json(searchTalker);
 });
 
 app.get('/talker/:id', async (req, res) => {

@@ -6,6 +6,4 @@ const generatorToken = () => {
     return token;
 };
 
-module.exports = {
-  generatorToken,
-};
+module.exports = generatorToken;

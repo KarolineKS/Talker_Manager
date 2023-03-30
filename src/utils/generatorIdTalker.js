@@ -10,6 +10,4 @@ const generatorIdTalker = async () => {
   return maxId + 1;
 };
 
-module.exports = {
-  generatorIdTalker,
-};
+module.exports = generatorIdTalker;
