@@ -13,7 +13,7 @@ const {
   validateName, 
   validateAge, 
   validateRate, validateWatchedAt, validateTalk } = require('./middlewares/validateTalker');
-const validateQueryRate = require('./middlewares/validateQueryRate');
+const { validateQueryRate, validateQueryDate } = require('./middlewares/validateQuery');
 
 const app = express();
 app.use(express.json());
@@ -36,13 +36,19 @@ app.get('/talker', async (_req, res) => {
   return res.status(200).json(talkers);
 });
 
-app.get('/talker/search', validateToken, validateQueryRate, async (req, res) => {
-  const { q, rate } = req.query;
-  const talkerFile = await readTalkerFile();
-
-  const searchTalker = talkerFile.filter(({ name, talk }) => 
-    (q ? name.includes(q) : true) && (rate ? talk.rate === Number(rate) : true));
-    return res.status(200).json(searchTalker);
+app.get('/talker/search', validateToken, validateQueryRate, validateQueryDate, async (req, res) => {
+  const { q, rate: rateQuery, date } = req.query;
+  let talkerFile = await readTalkerFile();
+  if (q) {
+    talkerFile = talkerFile.filter(({ name }) => name.includes(q));
+  }
+  if (rateQuery) {
+    talkerFile = talkerFile.filter(({ talk: { rate } }) => Number(rateQuery) === rate); 
+  }
+  if (date) {
+    talkerFile = talkerFile.filter(({ talk: { watchedAt } }) => date === watchedAt || date === '');
+  }
+  return res.status(200).json(talkerFile);
 });
 
 app.get('/talker/:id', async (req, res) => {
