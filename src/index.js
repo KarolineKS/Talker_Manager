@@ -13,7 +13,8 @@ const {
   validateName, 
   validateAge, 
   validateRate, validateWatchedAt, validateTalk } = require('./middlewares/validateTalker');
-const { validateQueryRate, validateQueryDate, validateRateQuery } = require('./middlewares/validateQuery');
+const { validateQueryRate, validateQueryDate,
+  validateRateQuery } = require('./middlewares/validateQuery');
 
 const app = express();
 app.use(express.json());
