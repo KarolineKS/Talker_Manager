@@ -13,7 +13,7 @@ const {
   validateName, 
   validateAge, 
   validateRate, validateWatchedAt, validateTalk } = require('./middlewares/validateTalker');
-const { validateQueryRate, validateQueryDate } = require('./middlewares/validateQuery');
+const { validateQueryRate, validateQueryDate, validateRateQuery } = require('./middlewares/validateQuery');
 
 const app = express();
 app.use(express.json());
@@ -111,6 +111,17 @@ validateName, validateAge, validateTalk, validateWatchedAt, validateRate, async 
   }
   await insertTalkerById(talker, id);
   return res.status(200).json(talker);
+});
+
+app.patch('/talker/rate/:id', validateToken, validateRateQuery, async (req, res) => {
+  const { id } = req.params;
+  const { rate } = req.body;
+
+  const talkerFile = await readTalkerFile();
+  const searchTalkerById = talkerFile.find((talk) => talk.id === Number(id));
+  searchTalkerById.talk.rate = rate;
+  await insertTalkerById(searchTalkerById, id);
+  return res.status(204).json('ai fera');
 });
 
 app.delete('/talker/:id', validateToken, async (req, res) => {
