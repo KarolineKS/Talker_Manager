@@ -13,7 +13,7 @@ const {
   validateName, 
   validateAge, 
   validateRate, validateWatchedAt, validateTalk } = require('./middlewares/validateTalker');
-const { validateQueryRate, validateQueryDate,
+const { validateQueryDate,
   validateRateQuery } = require('./middlewares/validateQuery');
 
 const app = express();
@@ -37,7 +37,7 @@ app.get('/talker', async (_req, res) => {
   return res.status(200).json(talkers);
 });
 
-app.get('/talker/search', validateToken, validateQueryRate, validateQueryDate, async (req, res) => {
+app.get('/talker/search', validateToken, validateQueryDate, validateRateQuery, async (req, res) => {
   const { q, rate: rateQuery, date } = req.query;
   let talkerFile = await readTalkerFile();
   if (q) {
