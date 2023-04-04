@@ -11,6 +11,21 @@ const validateQueryDate = (req, res, next) => {
   next();
 };
 
+const validatePatchRate = (req, res, next) => {
+  const { rate } = req.body;
+  if (rate === undefined) {
+    return res.status(400).json({
+      message: 'O campo "rate" é obrigatório',
+    });
+  }
+  if (Number(rate) <= 0 || Number(rate) > 5 || !Number.isInteger(Number(rate))) {
+    return res.status(400).json({
+      message: 'O campo "rate" deve ser um número inteiro entre 1 e 5',
+    });
+  }
+  next();
+};
+
 const validateRateQuery = (req, res, next) => {
   const { rate } = req.query;
   if (rate && (!Number.isInteger(Number(rate)) || Number(rate) < 1 || Number(rate) > 5)) {
@@ -22,7 +37,7 @@ const validateRateQuery = (req, res, next) => {
 };
 
 module.exports = {
-
   validateQueryDate,
   validateRateQuery,
+  validatePatchRate,
 };
